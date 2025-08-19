@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Weather App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      transition: background 1s;
+      background: linear-gradient(to top, #87CEEB, #fff);
+      overflow: hidden;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    input, button {
+      padding: 10px;
+      font-size: 16px;
+      margin: 5px;
+      border-radius: 5px;
+      border: none;
+      outline: none;
+    }
+
+    button {
+      cursor: pointer;
+      background: #007BFF;
+      color: white;
+    }
+
+    #weatherResult {
+      margin-top: 20px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    /* Rain Effect */
+    .rain {
+      position: fixed;
+      width: 2px;
+      height: 20px;
+      background: white;
+      top: -20px;
+      animation: rain 0.5s linear infinite;
+      opacity: 0.6;
+    }
+    @keyframes rain {
+      to {
+        transform: translateY(100vh);
+      }
+    }
+
+    /* Sun Effect */
+    .sun {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      width: 100px;
+      height: 100px;
+      background: yellow;
+      border-radius: 50%;
+      box-shadow: 0 0 50px yellow;
+    }
+
+    /* Cloud Effect */
+    .cloud {
+      position: fixed;
+      top: 50px;
+      left: 50%;
+      width: 150px;
+      height: 80px;
+      background: #fff;
+      border-radius: 50%;
+      filter: blur(2px);
+      animation: moveCloud 20s linear infinite;
+    }
+    @keyframes moveCloud {
+      0% { left: -200px; }
+      100% { left: 110%; }
+    }
+  </style>
+</head>
+<body>
+  <h1>🌦 Weather App</h1>
+  <input type="text" id="cityInput" placeholder="Enter city">
+  <button onclick="getWeather()">Get Weather</button>
+  <div id="weatherResult"></div>
+
+  <script>
+    async function getWeather() {
+      const apiKey = "bfce70dab48fdcf033813eecbc6e2b17"; // Replace with your OpenWeatherMap API key
+      const city = document.getElementById("cityInput").value.trim();
+
+      if (!city) {
+        document.getElementById("weatherResult").innerText = "Please enter a city!";
+        return;
+      }
+
+      try {
+        // First fetch latitude & longitude using Geocoding API
+        const geoUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=1&appid=${apiKey}`;
+        const geoResponse = await fetch(geoUrl);
+        const geoData = await geoResponse.json();
+
+        if (!geoData || geoData.length === 0) {
+          document.getElementById("weatherResult").innerText = "City not found!";
+          return;
+        }
+
+        const { lat, lon, name, country } = geoData[0];
+
+        // Now fetch actual weather data using lat/lon
+        const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`;
+        const weatherResponse = await fetch(weatherUrl);
+        const data = await weatherResponse.json();
+
+        const temp = data.main.temp;
+        const condition = data.weather[0].main.toLowerCase();
+
+        document.getElementById("weatherResult").innerText =
+          `🌍 ${name}, ${country}: ${temp}°C, ${data.weather[0].description}`;
+
+        // Reset background & remove old effects
+        document.body.style.background = "linear-gradient(to top, #87CEEB, #fff)";
+        document.querySelectorAll(".rain, .sun, .cloud").forEach(e => e.remove());
+
+        // Apply effects based on condition
+        if (condition.includes("rain")) {
+          for (let i = 0; i < 50; i++) {
+            let drop = document.createElement("div");
+            drop.classList.add("rain");
+            drop.style.left = Math.random() * window.innerWidth + "px";
+            drop.style.animationDuration = (0.3 + Math.random()) + "s";
+            document.body.appendChild(drop);
+          }
+        } else if (condition.includes("clear")) {
+          let sun = document.createElement("div");
+          sun.classList.add("sun");
+          document.body.appendChild(sun);
+        } else if (condition.includes("cloud")) {
+          let cloud = document.createElement("div");
+          cloud.classList.add("cloud");
+          document.body.appendChild(cloud);
+        }
+      } catch (error) {
+        document.getElementById("weatherResult").innerText = "Error fetching data.";
+      }
+    }
+  </script>
+</body>
+</html>

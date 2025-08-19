@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Colorful Interactive Navbar</title>
+<style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        height: 2000px;
+        background: linear-gradient(135deg, #ffecd2, #fcb69f);
+    }
+
+    nav {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        padding: 15px 0;
+        background: linear-gradient(90deg, #ff758c, #ff7eb3, #84fab0, #8fd3f4);
+        background-size: 300% 300%;
+        animation: gradientMove 8s ease infinite;
+        transition: all 0.4s ease;
+        z-index: 1000;
+    }
+
+    nav.scrolled {
+        background: linear-gradient(90deg, #f6d365, #fda085, #fbc2eb, #a6c0fe);
+        background-size: 300% 300%;
+        animation: gradientMove 8s ease infinite;
+        box-shadow: 0 3px 15px rgba(0,0,0,0.3);
+    }
+
+    @keyframes gradientMove {
+        0% {background-position: 0% 50%;}
+        50% {background-position: 100% 50%;}
+        100% {background-position: 0% 50%;}
+    }
+
+    nav ul {
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        list-style: none;
+        gap: 30px;
+    }
+
+    nav ul li a {
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        text-decoration: none;
+        padding: 8px 15px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    nav ul li a:hover {
+        background: rgba(255, 255, 255, 0.2);
+        box-shadow: 0 0 10px white;
+        transform: scale(1.1);
+    }
+</style>
+</head>
+<body>
+
+<nav id="navbar">
+    <ul>
+        <li><a href="#">Home</a></li>
+        <li><a href="#">About</a></li>
+        <li><a href="#">Services</a></li>
+        <li><a href="#">Portfolio</a></li>
+        <li><a href="#">Contact</a></li>
+    </ul>
+</nav>
+
+<script>
+    const navbar = document.getElementById("navbar");
+    window.addEventListener("scroll", () => {
+        if (window.scrollY > 50) {
+            navbar.classList.add("scrolled");
+        } else {
+            navbar.classList.remove("scrolled");
+        }
+    });
+</script>
+
+</body>
+</html>

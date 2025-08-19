@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic-Tac-Toe Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        h1 {
+            margin-bottom: 20px;
+            font-size: 2rem;
+        }
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-template-rows: repeat(3, 100px);
+            gap: 5px;
+        }
+        .cell {
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+        .cell:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        .status {
+            margin-top: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        .buttons {
+            margin-top: 15px;
+        }
+        button {
+            padding: 8px 15px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            background: #ffce00;
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        button:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <h1>Tic-Tac-Toe</h1>
+    <div class="board" id="board"></div>
+    <div class="status" id="statusText">Player X's Turn</div>
+    <div class="buttons">
+        <button onclick="resetGame()">Restart Game</button>
+    </div>
+
+    <script>
+        const board = document.getElementById('board');
+        const statusText = document.getElementById('statusText');
+
+        let currentPlayer = "X";
+        let gameActive = true;
+        let gameState = ["", "", "", "", "", "", "", "", ""];
+
+        const winningConditions = [
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+            [0, 3, 6],
+            [1, 4, 7],
+            [2, 5, 8],
+            [0, 4, 8],
+            [2, 4, 6]
+        ];
+
+        function createBoard() {
+            board.innerHTML = "";
+            gameState.forEach((_, index) => {
+                const cell = document.createElement('div');
+                cell.classList.add('cell');
+                cell.dataset.index = index;
+                cell.addEventListener('click', handleCellClick);
+                board.appendChild(cell);
+            });
+        }
+
+        function handleCellClick(e) {
+            const index = e.target.dataset.index;
+            if (gameState[index] !== "" || !gameActive) return;
+
+            gameState[index] = currentPlayer;
+            e.target.textContent = currentPlayer;
+
+            if (checkWinner()) {
+                statusText.textContent = `🎉 Player ${currentPlayer} Wins!`;
+                gameActive = false;
+                return;
+            }
+
+            if (!gameState.includes("")) {
+                statusText.textContent = "It's a Draw! 🤝";
+                gameActive = false;
+                return;
+            }
+
+            currentPlayer = currentPlayer === "X" ? "O" : "X";
+            statusText.textContent = `Player ${currentPlayer}'s Turn`;
+        }
+
+        function checkWinner() {
+            return winningConditions.some(condition => {
+                const [a, b, c] = condition;
+                return gameState[a] && gameState[a] === gameState[b] && gameState[a] === gameState[c];
+            });
+        }
+
+        function resetGame() {
+            currentPlayer = "X";
+            gameActive = true;
+            gameState = ["", "", "", "", "", "", "", "", ""];
+            statusText.textContent = "Player X's Turn";
+            createBoard();
+        }
+
+        createBoard();
+    </script>
+</body>
+</html>
